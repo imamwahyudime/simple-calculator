@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    font-family: sans-serif;
+}
+
+.calculator {
+    background-color: #3a4452;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+#display {
+    width: 100%;
+    height: 60px;
+    font-size: 2.5em;
+    text-align: right;
+    border: none;
+    background-color: #a7afbe;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box; /* Include padding in width */
+    color: #333;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+button {
+    padding: 20px;
+    font-size: 1.5em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #d5d5d5;
+}
+
+button:active {
+    background-color: #cccccc;
+}
+
+.operator {
+    background-color: #f39c12; /* Orange */
+    color: white;
+}
+
+.operator:hover {
+    background-color: #e67e22;
+}
+
+.operator:active {
+    background-color: #d35400;
+}
+
+.equals {
+    grid-column: span 1; /* Or span 2 if you want it wider */
+    background-color: #2ecc71; /* Green */
+    color: white;
+}
+
+.equals:hover {
+    background-color: #27ae60;
+}
+
+.equals:active {
+    background-color: #1e8449;
+}
+
+.zero {
+   grid-column: span 1; /* Make 0 span two columns if desired: grid-column: span 2; */
+}
+</style></head>
+<body>
+
+    <div class="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="operator">AC</button>
+            <button onclick="deleteLast()" class="operator">DEL</button>
+            <button onclick="appendOperator('%')" class="operator">%</button>
+            <button onclick="appendOperator('/')" class="operator">/</button>
+
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button onclick="appendOperator('*')" class="operator">*</button>
+
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button onclick="appendOperator('-')" class="operator">-</button>
+
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button onclick="appendOperator('+')" class="operator">+</button>
+
+            <button onclick="appendNumber('0')" class="zero">0</button>
+            <button onclick="appendDecimal()">.</button>
+            <button onclick="calculateResult()" class="equals">=</button>
+        </div>
+    </div>
+
+    <script>
+      const display = document.getElementById('display');
+let currentInput = ''; // Stores the current expression string
+let operatorPressed = false; // Flag to manage operator input
+let decimalPressed = false; // Flag to manage decimal input within a number
+
+// Function to append numbers to the display
+function appendNumber(number) {
+    // If the display shows an error or Infinity, start fresh
+    if (display.value === 'Error' || display.value === 'Infinity') {
+        clearDisplay();
+    }
+    display.value += number;
+    operatorPressed = false; // Reset operator flag when a number is pressed
+}
+
+// Function to append operators
+function appendOperator(op) {
+    // Prevent starting with an operator (except maybe minus for negative numbers - handled implicitly by eval)
+    if (display.value === '' || display.value === 'Error') return;
+
+    // Prevent consecutive operators
+    if (operatorPressed && op !== '%') return; // Allow % after another operator for percentage calculation
+
+    // Handle percentage separately if desired (basic implementation: treat as /100)
+    if (op === '%') {
+        try {
+            // Calculate the percentage of the preceding number or result
+            // This simple version just appends '/100*' which works with eval
+            // More robust logic might be needed for complex cases
+            display.value += '/100*';
+            operatorPressed = true; // Treat % like an operator for sequencing
+            decimalPressed = false; // Allow decimal after % calculation starts new number
+            return; // Don't set operatorPressed to true in the standard way for %
+        } catch (e) {
+            display.value = 'Error';
+        }
+        return;
+    }
+
+
+    display.value += op;
+    operatorPressed = true; // Set flag indicating an operator was just pressed
+    decimalPressed = false; // Reset decimal flag when an operator is pressed
+}
+
+// Function to append a decimal point
+function appendDecimal() {
+    // Prevent adding decimal if one already exists in the current number segment
+    if (decimalPressed) return;
+    // Prevent adding decimal right after an operator without a preceding number
+    if (operatorPressed && !display.value.endsWith('.')) {
+         display.value += '0.'; // Add '0.' if decimal is pressed after operator
+    } else if (!display.value.includes('.', display.value.lastIndexOf('+') + 1) &&
+               !display.value.includes('.', display.value.lastIndexOf('-') + 1) &&
+               !display.value.includes('.', display.value.lastIndexOf('*') + 1) &&
+               !display.value.includes('.', display.value.lastIndexOf('/') + 1) &&
+               !display.value.endsWith('.')) {
+        // Basic check: add decimal if not present in the last number segment
+         // More robust parsing might be needed for complex scenarios
+        display.value += '.';
+    } else if (display.value === '') {
+         display.value = '0.'; // Start with '0.' if display is empty
+    }
+
+
+    decimalPressed = true; // Set flag
+    operatorPressed = false; // Pressing decimal means we're entering a number
+}
+
+
+// Function to clear the display
+function clearDisplay() {
+    display.value = '';
+    operatorPressed = false;
+    decimalPressed = false;
+}
+
+// Function to delete the last character
+function deleteLast() {
+     if (display.value === 'Error' || display.value === 'Infinity') {
+        clearDisplay();
+        return;
+    }
+    const lastChar = display.value.slice(-1);
+    display.value = display.value.slice(0, -1);
+
+    // Reset flags appropriately
+    if (['+', '-', '*', '/'].includes(lastChar)) {
+        operatorPressed = false; // Or check the new last character
+    }
+    if (lastChar === '.') {
+        decimalPressed = false;
+    }
+    // Check if the new last character is an operator to set operatorPressed correctly
+    const newLastChar = display.value.slice(-1);
+     operatorPressed = ['+', '-', '*', '/'].includes(newLastChar);
+     // Re-check if decimal exists in the last number segment
+     // This simple check might not be perfect for all edge cases
+     const lastOperatorIndex = Math.max(display.value.lastIndexOf('+'), display.value.lastIndexOf('-'), display.value.lastIndexOf('*'), display.value.lastIndexOf('/'));
+     decimalPressed = display.value.includes('.', lastOperatorIndex + 1);
+}
+
+// Function to calculate the result
+function calculateResult() {
+    if (display.value === '' || display.value === 'Error') return;
+
+    try {
+        // **WARNING:** Using eval() can be a security risk if the input
+        // isn't strictly controlled (which it *mostly* is here since input
+        // comes from buttons, but be aware). For more complex or public-facing
+        // applications, a dedicated math expression parser is safer.
+        let expression = display.value;
+
+        // Basic validation or replacement for safety (optional enhancement)
+        // e.g., replace multiple operators, handle leading/trailing operators more gracefully
+
+        const result = eval(expression);
+
+        if (isNaN(result) || !isFinite(result)) {
+             if (result === Infinity || result === -Infinity) {
+                display.value = 'Infinity';
+             } else {
+                display.value = 'Error';
+             }
+        } else {
+             // Handle floating point precision issues (optional but good)
+            display.value = parseFloat(result.toPrecision(12)); // Adjust precision as needed
+        }
+        operatorPressed = false; // Reset flags after calculation
+        // Check if result contains a decimal
+        decimalPressed = display.value.includes('.');
+
+
+    } catch (error) {
+        display.value = 'Error';
+        operatorPressed = false;
+        decimalPressed = false;
+    }
+}
+    </script>
+</body>
+</html>
