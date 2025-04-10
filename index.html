@@ -3,39 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Calculator (Classic Colors)</title>
+    <title>Calculator with Memory (Classic Colors)</title>
 
     <style>
-        /* CSS styles reverted to the original color palette */
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f0f0f0; /* Original light gray page background */
+            background-color: #f0f0f0;
             font-family: 'Arial', sans-serif;
         }
 
         .calculator {
-            background-color: #3a4452; /* Original dark blue-gray body */
-            padding: 20px; /* Adjusted padding slightly */
+            background-color: #3a4452;
+            padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Simple shadow for depth */
-            width: 320px; /* Maintain fixed width */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 320px;
         }
 
         #display {
             width: 100%;
-            height: 65px; /* Adjusted height */
-            font-size: 2.6em; /* Adjusted font size */
+            height: 65px;
+            font-size: 2.6em;
             text-align: right;
             border: none;
-            background-color: #a7afbe; /* Original lighter blue-gray display */
+            background-color: #a7afbe;
             border-radius: 10px;
-            padding: 10px 15px; /* Adjusted padding */
+            padding: 10px 15px;
             margin-bottom: 20px;
             box-sizing: border-box;
-            color: #333; /* Darker text for contrast */
+            color: #333;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -44,29 +43,29 @@
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px; /* Adjusted gap */
+            gap: 12px;
         }
 
         button {
-            padding: 18px;
-            font-size: 1.4em;
+            padding: 16px; /* Slightly reduced padding to fit extra row better */
+            font-size: 1.3em; /* Slightly reduced font size */
             border: none;
-            border-radius: 10px; /* Slightly less rounded */
+            border-radius: 10px;
             cursor: pointer;
-            background-color: #e0e0e0; /* Original light gray for number buttons */
-            color: #333; /* Dark text for number buttons */
+            background-color: #e0e0e0;
+            color: #333;
             transition: background-color 0.2s ease;
         }
 
         button:hover {
-            background-color: #d5d5d5; /* Simple hover for number buttons */
+            background-color: #d5d5d5;
         }
 
         button:active {
-            background-color: #cccccc; /* Simple active state for number buttons */
+            background-color: #cccccc;
         }
 
-        /* Style for function buttons (Sqrt, Percent) - matching operators */
+        /* Style for function buttons (Sqrt, Percent, Memory) */
         .function {
              background-color: #f39c12; /* Orange background */
              color: white;
@@ -77,7 +76,7 @@
 
         /* Style for operator buttons */
         .operator {
-            background-color: #f39c12; /* Original Orange background */
+            background-color: #f39c12; /* Orange background */
             color: white;
             font-weight: bold;
         }
@@ -87,7 +86,7 @@
         /* Style for Equals button */
         .equals {
             grid-column: span 1;
-            background-color: #2ecc71; /* Original Green background */
+            background-color: #2ecc71; /* Green background */
             color: white;
             font-weight: bold;
         }
@@ -96,7 +95,7 @@
 
         /* Style for Clear/Delete buttons */
         .clear {
-             background-color: #e74c3c; /* Red background for Clear/DEL */
+             background-color: #e74c3c; /* Red background */
              color: white;
              font-weight: bold;
         }
@@ -105,7 +104,7 @@
 
 
          .zero {
-             grid-column: span 2; /* Keep 0 spanning two columns */
+             grid-column: span 2;
         }
 
     </style>
@@ -115,9 +114,17 @@
     <div class="calculator">
         <input type="text" id="display" readonly placeholder="0">
         <div class="buttons">
+            <button onclick="memoryClear()" class="function">MC</button>
+            <button onclick="memoryRecall()" class="function">MR</button>
+            <button onclick="memoryAdd()" class="function">M+</button>
+            <button onclick="memorySubtract()" class="function">M-</button>
+
             <button onclick="clearDisplay()" class="clear">AC</button>
             <button onclick="deleteLast()" class="clear">DEL</button>
-             <button onclick="calculateSqrt()" class="function">√</button> <button onclick="calculatePercent()" class="function">%</button> <button onclick="appendNumber('7')">7</button>
+            <button onclick="calculateSqrt()" class="function">√</button>
+            <button onclick="calculatePercent()" class="function">%</button>
+
+            <button onclick="appendNumber('7')">7</button>
             <button onclick="appendNumber('8')">8</button>
             <button onclick="appendNumber('9')">9</button>
             <button onclick="appendOperator('/')" class="operator">÷</button>
@@ -137,53 +144,48 @@
             <button onclick="appendOperator('+')" class="operator">+</button>
             <button onclick="calculateResult()" class="equals">=</button>
 
-
         </div>
     </div>
 
     <script>
+        // JavaScript logic including Memory Functions
         const display = document.getElementById('display');
         let operatorPressed = false;
         let decimalPressedInCurrentNumber = false;
         const errorMsg = "Error";
         const infinityMsg = "Infinity";
 
+        // --- Memory Variable ---
+        let memoryValue = 0;
+
         function updateDisplay(value) {
             try {
                 let displayValue = String(value);
-                if (displayValue === "NaN") {
-                    display.value = errorMsg; return;
-                }
-                 if (displayValue === infinityMsg || displayValue === "-Infinity") {
-                    display.value = infinityMsg; return;
-                }
-                 display.value = displayValue;
-                 operatorPressed = ['+', '-', '*', '/'].includes(displayValue.slice(-1));
-                 decimalPressedInCurrentNumber = displayValue.includes('.') && displayValue.lastIndexOf('.') > Math.max(displayValue.lastIndexOf('+'), displayValue.lastIndexOf('-'), displayValue.lastIndexOf('*'), displayValue.lastIndexOf('/'));
-            } catch (e) {
-                 display.value = errorMsg;
-            }
+                if (displayValue === "NaN") { display.value = errorMsg; return; }
+                if (displayValue === infinityMsg || displayValue === "-Infinity") { display.value = infinityMsg; return; }
+                display.value = displayValue;
+                operatorPressed = ['+', '-', '*', '/'].includes(displayValue.slice(-1));
+                decimalPressedInCurrentNumber = displayValue.includes('.') && displayValue.lastIndexOf('.') > Math.max(displayValue.lastIndexOf('+'), displayValue.lastIndexOf('-'), displayValue.lastIndexOf('*'), displayValue.lastIndexOf('/'));
+            } catch (e) { display.value = errorMsg; }
         }
 
         function appendNumber(number) {
-            if (display.value === errorMsg || display.value === infinityMsg) {
-                clearDisplay();
-            }
+            if (display.value === errorMsg || display.value === infinityMsg) { clearDisplay(); }
             updateDisplay(display.value + number);
             operatorPressed = false;
         }
 
         function appendOperator(op) {
             const currentValue = display.value;
-             if (currentValue === '' || currentValue === errorMsg || currentValue === infinityMsg) return;
-             const lastChar = currentValue.slice(-1);
+            if (currentValue === '' || currentValue === errorMsg || currentValue === infinityMsg) return;
+            const lastChar = currentValue.slice(-1);
             if (operatorPressed && !(['*', '/'].includes(lastChar) && op === '-')) {
-                 if (['+', '-', '*', '/'].includes(lastChar)) {
-                      updateDisplay(currentValue.slice(0, -1) + op);
-                      operatorPressed = true;
-                      decimalPressedInCurrentNumber = false;
-                      return;
-                 }
+                if (['+', '-', '*', '/'].includes(lastChar)) {
+                    updateDisplay(currentValue.slice(0, -1) + op);
+                    operatorPressed = true;
+                    decimalPressedInCurrentNumber = false;
+                    return;
+                }
             }
             updateDisplay(currentValue + op);
             operatorPressed = true;
@@ -192,13 +194,10 @@
 
         function appendDecimal() {
             const currentValue = display.value;
-             if (currentValue === errorMsg || currentValue === infinityMsg) return;
+            if (currentValue === errorMsg || currentValue === infinityMsg) return;
             if (decimalPressedInCurrentNumber) return;
-            if (currentValue === '' || operatorPressed) {
-                updateDisplay(currentValue + '0.');
-            } else {
-                updateDisplay(currentValue + '.');
-            }
+            if (currentValue === '' || operatorPressed) { updateDisplay(currentValue + '0.'); }
+            else { updateDisplay(currentValue + '.'); }
             decimalPressedInCurrentNumber = true;
             operatorPressed = false;
         }
@@ -212,52 +211,109 @@
 
         function deleteLast() {
             const currentValue = display.value;
-             if (currentValue === errorMsg || currentValue === infinityMsg) {
-                clearDisplay(); return;
-            }
+            if (currentValue === errorMsg || currentValue === infinityMsg) { clearDisplay(); return; }
             updateDisplay(currentValue.slice(0, -1));
         }
 
         function calculateSqrt() {
-             try {
-                 const currentValue = parseFloat(display.value);
-                 if (isNaN(currentValue)) { updateDisplay(errorMsg); }
-                 else if (currentValue < 0) { updateDisplay("Neg √ Error"); }
-                 else { updateDisplay(parseFloat(Math.sqrt(currentValue).toPrecision(12))); }
-             } catch (e) { updateDisplay(errorMsg); }
-             operatorPressed = false;
-             decimalPressedInCurrentNumber = display.value.includes('.');
+            try {
+                const currentValue = parseFloat(display.value);
+                if (isNaN(currentValue)) { updateDisplay(errorMsg); }
+                else if (currentValue < 0) { updateDisplay("Neg √ Error"); }
+                else { updateDisplay(parseFloat(Math.sqrt(currentValue).toPrecision(12))); }
+            } catch (e) { updateDisplay(errorMsg); }
+            operatorPressed = false;
+            decimalPressedInCurrentNumber = display.value.includes('.');
         }
 
         function calculatePercent() {
-              try {
-                 const currentValue = parseFloat(display.value);
-                  if (isNaN(currentValue)) { updateDisplay(errorMsg); }
-                  else { updateDisplay(parseFloat((currentValue / 100).toPrecision(12))); }
-              } catch (e) { updateDisplay(errorMsg); }
-              operatorPressed = false;
-              decimalPressedInCurrentNumber = display.value.includes('.');
+            try {
+                const currentValue = parseFloat(display.value);
+                if (isNaN(currentValue)) { updateDisplay(errorMsg); }
+                else { updateDisplay(parseFloat((currentValue / 100).toPrecision(12))); }
+            } catch (e) { updateDisplay(errorMsg); }
+            operatorPressed = false;
+            decimalPressedInCurrentNumber = display.value.includes('.');
         }
 
         function calculateResult() {
             const expression = display.value;
-             if (expression === '' || expression === errorMsg || expression === infinityMsg) return;
+            if (expression === '' || expression === errorMsg || expression === infinityMsg) return;
             try {
                 const sanitizedExpression = expression.replace(/×/g, '*').replace(/÷/g, '/');
-                 if (['+', '-', '*', '/'].includes(sanitizedExpression.slice(-1))) {
-                     updateDisplay(errorMsg); return;
-                 }
+                if (['+', '-', '*', '/'].includes(sanitizedExpression.slice(-1))) { updateDisplay(errorMsg); return; }
                 const calculate = new Function('return ' + sanitizedExpression);
                 const result = calculate();
-                 if (isNaN(result)) { updateDisplay(errorMsg); }
-                 else if (!isFinite(result)) { updateDisplay(infinityMsg); }
-                 else { updateDisplay(parseFloat(result.toPrecision(12))); }
-            } catch (error) {
-                 console.error("Calculation Error:", error);
-                 updateDisplay(errorMsg);
-            }
+                if (isNaN(result)) { updateDisplay(errorMsg); }
+                else if (!isFinite(result)) { updateDisplay(infinityMsg); }
+                else { updateDisplay(parseFloat(result.toPrecision(12))); }
+            } catch (error) { console.error("Calculation Error:", error); updateDisplay(errorMsg); }
+            operatorPressed = false;
+            decimalPressedInCurrentNumber = display.value.includes('.');
+        }
+
+        // --- Memory Functions ---
+
+        /**
+         * Clears the value stored in memory.
+         */
+        function memoryClear() {
+            memoryValue = 0;
+            // Optional: Add feedback to user e.g., console.log("Memory Cleared");
+        }
+
+        /**
+         * Recalls the value from memory and displays it, replacing the current display content.
+         */
+        function memoryRecall() {
+             // Convert memoryValue to string for display consistency, handle potential precision
+             updateDisplay(parseFloat(memoryValue.toPrecision(12)));
+             // When recalling, the display now holds a complete number, ready for next operation
              operatorPressed = false;
-             decimalPressedInCurrentNumber = display.value.includes('.');
+             // decimalPressedInCurrentNumber is updated by updateDisplay
+        }
+
+        /**
+         * Adds the current display value to the value stored in memory.
+         */
+        function memoryAdd() {
+            const currentValueStr = display.value;
+            if (currentValueStr === errorMsg || currentValueStr === infinityMsg || currentValueStr === '') return;
+
+            try {
+                const currentValue = parseFloat(currentValueStr);
+                if (!isNaN(currentValue)) {
+                    memoryValue += currentValue;
+                    // Optional: Add feedback e.g., console.log("Added to Memory. New Memory:", memoryValue);
+                } else {
+                    // Handle case where display has something non-numeric that isn't Error/Infinity
+                     console.warn("M+ attempted on non-numeric display value:", currentValueStr);
+                }
+            } catch(e) {
+                 console.error("Error during M+ operation:", e);
+            }
+             // Typically, M+ does not clear or change the display
+        }
+
+        /**
+         * Subtracts the current display value from the value stored in memory.
+         */
+        function memorySubtract() {
+             const currentValueStr = display.value;
+            if (currentValueStr === errorMsg || currentValueStr === infinityMsg || currentValueStr === '') return;
+
+             try {
+                 const currentValue = parseFloat(currentValueStr);
+                if (!isNaN(currentValue)) {
+                    memoryValue -= currentValue;
+                     // Optional: Add feedback e.g., console.log("Subtracted from Memory. New Memory:", memoryValue);
+                } else {
+                    console.warn("M- attempted on non-numeric display value:", currentValueStr);
+                }
+            } catch(e) {
+                console.error("Error during M- operation:", e);
+            }
+             // Typically, M- does not clear or change the display
         }
 
          clearDisplay(); // Initialize
