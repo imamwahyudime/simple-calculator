@@ -3,264 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Calculator</title>
-<style>
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f0f0f0;
-    font-family: sans-serif;
-}
+    <title>Enhanced Calculator</title>
 
-.calculator {
-    background-color: #3a4452;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
+    <style>
+        /* CSS styles are embedded here */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e0e5ec; /* Light neumorphic background */
+            font-family: 'Arial', sans-serif;
+        }
 
-#display {
-    width: 100%;
-    height: 60px;
-    font-size: 2.5em;
-    text-align: right;
-    border: none;
-    background-color: #a7afbe;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 15px;
-    box-sizing: border-box; /* Include padding in width */
-    color: #333;
-}
+        .calculator {
+            background-color: #e0e5ec;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 9px 9px 16px #a3b1c6, -9px -9px 16px #ffffff; /* Neumorphic shadows */
+            width: 320px; /* Fixed width for better layout */
+        }
 
-.buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
+        #display {
+            width: 100%;
+            height: 70px;
+            font-size: 2.8em;
+            text-align: right;
+            border: none;
+            background-color: #e0e5ec; /* Match background */
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-sizing: border-box; /* Include padding in width */
+            color: #555;
+            box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff; /* Inset shadow for display */
+            overflow: hidden; /* Prevent text overflow */
+            text-overflow: ellipsis; /* Add ellipsis if text overflows */
+            white-space: nowrap; /* Keep text on one line */
+        }
 
-button {
-    padding: 20px;
-    font-size: 1.5em;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #e0e0e0;
-    transition: background-color 0.2s ease;
-}
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px; /* Increased gap */
+        }
 
-button:hover {
-    background-color: #d5d5d5;
-}
+        button {
+            padding: 18px; /* Slightly adjusted padding */
+            font-size: 1.4em;
+            border: none;
+            border-radius: 12px; /* Slightly more rounded */
+            cursor: pointer;
+            background-color: #e0e5ec; /* Match background */
+            color: #555;
+            font-weight: bold;
+            box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff; /* Neumorphic button shadow */
+            transition: all 0.1s ease-in-out;
+        }
 
-button:active {
-    background-color: #cccccc;
-}
+        button:hover {
+            box-shadow: 3px 3px 6px #a3b1c6, -3px -3px 6px #ffffff; /* Adjust shadow on hover */
+        }
 
-.operator {
-    background-color: #f39c12; /* Orange */
-    color: white;
-}
+        button:active {
+            box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff; /* Inset shadow on press */
+            font-size: 1.35em; /* Slightly smaller font on press */
+        }
 
-.operator:hover {
-    background-color: #e67e22;
-}
+        .function { /* Style for functions like sqrt, % */
+             background-color: #d1d9e6; /* Slightly different shade */
+        }
 
-.operator:active {
-    background-color: #d35400;
-}
+        .operator {
+            /* background-color: #e67e22; */ /* Alternative: use color for operators */
+             color: #e67e22; /* Orange color for operator symbols */
+             font-weight: bold;
+        }
 
-.equals {
-    grid-column: span 1; /* Or span 2 if you want it wider */
-    background-color: #2ecc71; /* Green */
-    color: white;
-}
+        .equals {
+            grid-column: span 1;
+            /* background-color: #27ae60; */ /* Alternative: use color */
+            color: #27ae60; /* Green color for equals */
+            font-weight: bold;
+        }
 
-.equals:hover {
-    background-color: #27ae60;
-}
+        .clear { /* Style for AC and DEL */
+            color: #e74c3c; /* Red color for clear/delete */
+        }
 
-.equals:active {
-    background-color: #1e8449;
-}
+         .zero {
+             grid-column: span 2; /* Make 0 span two columns */
+        }
 
-.zero {
-   grid-column: span 1; /* Make 0 span two columns if desired: grid-column: span 2; */
-}
-</style></head>
+    </style>
+</head>
 <body>
 
     <div class="calculator">
-        <input type="text" id="display" readonly>
+        <input type="text" id="display" readonly placeholder="0">
         <div class="buttons">
-            <button onclick="clearDisplay()" class="operator">AC</button>
-            <button onclick="deleteLast()" class="operator">DEL</button>
-            <button onclick="appendOperator('%')" class="operator">%</button>
-            <button onclick="appendOperator('/')" class="operator">/</button>
+            <button onclick="clearDisplay()" class="clear">AC</button>
+            <button onclick="deleteLast()" class="clear">DEL</button>
+             <button onclick="calculateSqrt()" class="function">√</button>
+            <button onclick="calculatePercent()" class="function">%</button>
+
 
             <button onclick="appendNumber('7')">7</button>
             <button onclick="appendNumber('8')">8</button>
             <button onclick="appendNumber('9')">9</button>
-            <button onclick="appendOperator('*')" class="operator">*</button>
+            <button onclick="appendOperator('/')" class="operator">÷</button>
 
             <button onclick="appendNumber('4')">4</button>
             <button onclick="appendNumber('5')">5</button>
             <button onclick="appendNumber('6')">6</button>
-            <button onclick="appendOperator('-')" class="operator">-</button>
+            <button onclick="appendOperator('*')" class="operator">×</button>
 
             <button onclick="appendNumber('1')">1</button>
             <button onclick="appendNumber('2')">2</button>
             <button onclick="appendNumber('3')">3</button>
-            <button onclick="appendOperator('+')" class="operator">+</button>
+            <button onclick="appendOperator('-')" class="operator">−</button>
 
             <button onclick="appendNumber('0')" class="zero">0</button>
             <button onclick="appendDecimal()">.</button>
+            <button onclick="appendOperator('+')" class="operator">+</button>
             <button onclick="calculateResult()" class="equals">=</button>
+
+
         </div>
     </div>
 
     <script>
-      const display = document.getElementById('display');
-let currentInput = ''; // Stores the current expression string
-let operatorPressed = false; // Flag to manage operator input
-let decimalPressed = false; // Flag to manage decimal input within a number
+        // JavaScript logic is embedded here
+        const display = document.getElementById('display');
+        let operatorPressed = false; // Flag to manage operator input
+        let decimalPressedInCurrentNumber = false; // Flag to manage decimal input within the current number segment
+        const errorMsg = "Error";
+        const infinityMsg = "Infinity";
 
-// Function to append numbers to the display
-function appendNumber(number) {
-    // If the display shows an error or Infinity, start fresh
-    if (display.value === 'Error' || display.value === 'Infinity') {
-        clearDisplay();
-    }
-    display.value += number;
-    operatorPressed = false; // Reset operator flag when a number is pressed
-}
+        // Function to update display and handle potential overflow/errors
+        function updateDisplay(value) {
+            try {
+                let displayValue = String(value);
 
-// Function to append operators
-function appendOperator(op) {
-    // Prevent starting with an operator (except maybe minus for negative numbers - handled implicitly by eval)
-    if (display.value === '' || display.value === 'Error') return;
+                // Handle potential NaN/Infinity from calculations
+                if (displayValue === "NaN") {
+                    display.value = errorMsg;
+                    return;
+                }
+                 if (displayValue === infinityMsg || displayValue === "-Infinity") {
+                    display.value = infinityMsg;
+                    return;
+                }
 
-    // Prevent consecutive operators
-    if (operatorPressed && op !== '%') return; // Allow % after another operator for percentage calculation
+                 // Optional: Limit display length or use scientific notation for very large/small numbers
+                 // For now, we rely on the input field's overflow handling (ellipsis)
 
-    // Handle percentage separately if desired (basic implementation: treat as /100)
-    if (op === '%') {
-        try {
-            // Calculate the percentage of the preceding number or result
-            // This simple version just appends '/100*' which works with eval
-            // More robust logic might be needed for complex cases
-            display.value += '/100*';
-            operatorPressed = true; // Treat % like an operator for sequencing
-            decimalPressed = false; // Allow decimal after % calculation starts new number
-            return; // Don't set operatorPressed to true in the standard way for %
-        } catch (e) {
-            display.value = 'Error';
+                 display.value = displayValue;
+
+                // Update flags based on the new display value
+                operatorPressed = ['+', '-', '*', '/'].includes(displayValue.slice(-1));
+                decimalPressedInCurrentNumber = displayValue.includes('.') && displayValue.lastIndexOf('.') > Math.max(displayValue.lastIndexOf('+'), displayValue.lastIndexOf('-'), displayValue.lastIndexOf('*'), displayValue.lastIndexOf('/'));
+
+            } catch (e) {
+                 display.value = errorMsg;
+            }
+
         }
-        return;
-    }
+
+        // Function to append numbers to the display
+        function appendNumber(number) {
+            if (display.value === errorMsg || display.value === infinityMsg) {
+                clearDisplay();
+            }
+            // If the last action was pressing equals or a function key that replaced the value, start fresh
+             // (This logic might need refinement depending on desired calculator behavior)
+            // For now, just append
+            updateDisplay(display.value + number);
+            operatorPressed = false; // Reset operator flag
+        }
+
+        // Function to append operators
+        function appendOperator(op) {
+            const currentValue = display.value;
+             if (currentValue === '' || currentValue === errorMsg || currentValue === infinityMsg) return;
+
+            // Prevent consecutive operators (allow minus after another operator for negative numbers)
+             const lastChar = currentValue.slice(-1);
+            if (operatorPressed && !(['*', '/'].includes(lastChar) && op === '-')) { // Prevent ++, **, //, etc. Allow *-, /-
+                 if (['+', '-', '*', '/'].includes(lastChar)) {
+                      // Replace the last operator if a new one is pressed
+                      updateDisplay(currentValue.slice(0, -1) + op);
+                      operatorPressed = true;
+                      decimalPressedInCurrentNumber = false;
+                      return;
+                 }
+            }
 
 
-    display.value += op;
-    operatorPressed = true; // Set flag indicating an operator was just pressed
-    decimalPressed = false; // Reset decimal flag when an operator is pressed
-}
+            updateDisplay(currentValue + op);
+            operatorPressed = true;
+            decimalPressedInCurrentNumber = false; // Reset decimal flag
+        }
 
-// Function to append a decimal point
-function appendDecimal() {
-    // Prevent adding decimal if one already exists in the current number segment
-    if (decimalPressed) return;
-    // Prevent adding decimal right after an operator without a preceding number
-    if (operatorPressed && !display.value.endsWith('.')) {
-         display.value += '0.'; // Add '0.' if decimal is pressed after operator
-    } else if (!display.value.includes('.', display.value.lastIndexOf('+') + 1) &&
-               !display.value.includes('.', display.value.lastIndexOf('-') + 1) &&
-               !display.value.includes('.', display.value.lastIndexOf('*') + 1) &&
-               !display.value.includes('.', display.value.lastIndexOf('/') + 1) &&
-               !display.value.endsWith('.')) {
-        // Basic check: add decimal if not present in the last number segment
-         // More robust parsing might be needed for complex scenarios
-        display.value += '.';
-    } else if (display.value === '') {
-         display.value = '0.'; // Start with '0.' if display is empty
-    }
+        // Function to append a decimal point
+        function appendDecimal() {
+            const currentValue = display.value;
+             if (currentValue === errorMsg || currentValue === infinityMsg) return;
 
+            // Prevent adding decimal if one already exists in the current number segment
+            if (decimalPressedInCurrentNumber) return;
 
-    decimalPressed = true; // Set flag
-    operatorPressed = false; // Pressing decimal means we're entering a number
-}
+            // If display is empty or last char was operator, start with '0.'
+            if (currentValue === '' || operatorPressed) {
+                updateDisplay(currentValue + '0.');
+            } else {
+                updateDisplay(currentValue + '.');
+            }
+            decimalPressedInCurrentNumber = true;
+            operatorPressed = false;
+        }
 
 
-// Function to clear the display
-function clearDisplay() {
-    display.value = '';
-    operatorPressed = false;
-    decimalPressed = false;
-}
+        // Function to clear the display
+        function clearDisplay() {
+            updateDisplay('');
+            display.placeholder = '0'; // Reset placeholder
+            operatorPressed = false;
+            decimalPressedInCurrentNumber = false;
+        }
 
-// Function to delete the last character
-function deleteLast() {
-     if (display.value === 'Error' || display.value === 'Infinity') {
-        clearDisplay();
-        return;
-    }
-    const lastChar = display.value.slice(-1);
-    display.value = display.value.slice(0, -1);
+        // Function to delete the last character
+        function deleteLast() {
+            const currentValue = display.value;
+             if (currentValue === errorMsg || currentValue === infinityMsg) {
+                clearDisplay();
+                return;
+            }
+            updateDisplay(currentValue.slice(0, -1));
+            // No need to explicitly update flags here, updateDisplay handles it
+        }
 
-    // Reset flags appropriately
-    if (['+', '-', '*', '/'].includes(lastChar)) {
-        operatorPressed = false; // Or check the new last character
-    }
-    if (lastChar === '.') {
-        decimalPressed = false;
-    }
-    // Check if the new last character is an operator to set operatorPressed correctly
-    const newLastChar = display.value.slice(-1);
-     operatorPressed = ['+', '-', '*', '/'].includes(newLastChar);
-     // Re-check if decimal exists in the last number segment
-     // This simple check might not be perfect for all edge cases
-     const lastOperatorIndex = Math.max(display.value.lastIndexOf('+'), display.value.lastIndexOf('-'), display.value.lastIndexOf('*'), display.value.lastIndexOf('/'));
-     decimalPressed = display.value.includes('.', lastOperatorIndex + 1);
-}
+        // --- New Function Implementations ---
 
-// Function to calculate the result
-function calculateResult() {
-    if (display.value === '' || display.value === 'Error') return;
-
-    try {
-        // **WARNING:** Using eval() can be a security risk if the input
-        // isn't strictly controlled (which it *mostly* is here since input
-        // comes from buttons, but be aware). For more complex or public-facing
-        // applications, a dedicated math expression parser is safer.
-        let expression = display.value;
-
-        // Basic validation or replacement for safety (optional enhancement)
-        // e.g., replace multiple operators, handle leading/trailing operators more gracefully
-
-        const result = eval(expression);
-
-        if (isNaN(result) || !isFinite(result)) {
-             if (result === Infinity || result === -Infinity) {
-                display.value = 'Infinity';
-             } else {
-                display.value = 'Error';
+        // Function to calculate Square Root of the current display value
+        function calculateSqrt() {
+             try {
+                 const currentValue = parseFloat(display.value);
+                 if (isNaN(currentValue)) {
+                    updateDisplay(errorMsg);
+                 } else if (currentValue < 0) {
+                     updateDisplay("Neg √ Error"); // Specific error for sqrt of negative
+                 }
+                  else {
+                    updateDisplay(parseFloat(Math.sqrt(currentValue).toPrecision(12)));
+                 }
+             } catch (e) {
+                 updateDisplay(errorMsg);
              }
-        } else {
-             // Handle floating point precision issues (optional but good)
-            display.value = parseFloat(result.toPrecision(12)); // Adjust precision as needed
+            // After a function like sqrt, reset flags as it produces a result value
+             operatorPressed = false;
+             decimalPressedInCurrentNumber = display.value.includes('.');
         }
-        operatorPressed = false; // Reset flags after calculation
-        // Check if result contains a decimal
-        decimalPressed = display.value.includes('.');
+
+        // Function to calculate Percentage (divides current display value by 100)
+        function calculatePercent() {
+              try {
+                 const currentValue = parseFloat(display.value);
+                  if (isNaN(currentValue)) {
+                     updateDisplay(errorMsg);
+                 } else {
+                     // This version applies % to the current number: number -> number / 100
+                     updateDisplay(parseFloat((currentValue / 100).toPrecision(12)));
+                 }
+              } catch (e) {
+                  updateDisplay(errorMsg);
+              }
+             // After a function like percent, reset flags
+              operatorPressed = false;
+              decimalPressedInCurrentNumber = display.value.includes('.');
+        }
 
 
-    } catch (error) {
-        display.value = 'Error';
-        operatorPressed = false;
-        decimalPressed = false;
-    }
-}
+        // Function to calculate the final result
+        function calculateResult() {
+            const expression = display.value;
+             if (expression === '' || expression === errorMsg || expression === infinityMsg) return;
+
+            try {
+                // **WARNING:** Using Function() is slightly safer than eval() but still executes
+                // dynamic code and can have risks if the input isn't perfectly sanitized.
+                // For robust, secure applications, a dedicated math expression parser library is recommended.
+                // Replace common display operators with JS operators if needed (e.g., × -> *)
+                const sanitizedExpression = expression.replace(/×/g, '*').replace(/÷/g, '/');
+
+                 // Check for trailing operators (causes errors in Function constructor/eval)
+                 if (['+', '-', '*', '/'].includes(sanitizedExpression.slice(-1))) {
+                     updateDisplay(errorMsg);
+                     return;
+                 }
+
+
+                const calculate = new Function('return ' + sanitizedExpression);
+                const result = calculate();
+
+
+                 if (isNaN(result)) {
+                     updateDisplay(errorMsg);
+                 } else if (!isFinite(result)) {
+                     updateDisplay(infinityMsg);
+                 }
+                 else {
+                     // Handle floating point precision issues
+                    updateDisplay(parseFloat(result.toPrecision(12)));
+                }
+
+            } catch (error) {
+                 console.error("Calculation Error:", error); // Log error for debugging
+                 updateDisplay(errorMsg);
+            }
+             // Reset flags after calculation, ready for new input
+             operatorPressed = false; // Or check if the result itself should allow chaining operators
+             decimalPressedInCurrentNumber = display.value.includes('.');
+        }
+
+         // Initialize display
+         clearDisplay();
+
     </script>
+
 </body>
 </html>
