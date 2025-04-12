@@ -2,7 +2,7 @@
 
 This repository contains a simple, classic-themed calculator web application with memory functions. It's built using HTML, CSS, and JavaScript, providing a user-friendly interface for basic arithmetic calculations.
 
-## Features
+## Features:
 
 -   **Basic Arithmetic Operations:** Addition, subtraction, multiplication, and division.
 -   **Memory Functions:**
